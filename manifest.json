@@ -1,6 +1,6 @@
 {
     "name": "Simple Eval",
-    "version": "1.0.0",
+    "version": "0.9.1",
     "description": "Adds a command for evaluating javascript code locally.",
     "author": "pipythonmc",
     "license": "MIT"

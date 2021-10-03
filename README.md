@@ -13,3 +13,11 @@ Use the plugin at your own risk.
 
 ## Todo
 - Big fat popup when the user first installs the plugin with a warning
+
+## Changelogs
+
+## v0.9.1
+- Added experimental eval_async command that wraps the code in an async function
+
+## v0.9.0
+- Added basic working eval command

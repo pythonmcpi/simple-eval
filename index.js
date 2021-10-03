@@ -9,21 +9,42 @@ module.exports = class simple_eval extends Plugin {
 			usage: '{c} <code>',
 			executor: async (args) => ({
 				send: false,
-				result: await this.evaluate(args)
+				result: await this.evaluate(args, false)
+			})
+		});
+		
+		powercord.api.commands.registerCommand({
+			command: 'eval_async',
+			description: '[DANGEROUS] Asynchronously evaluates javascript code locally. DO NOT USE THIS COMMAND WITH CODE YOU DO NOT UNDERSTAND.',
+			usage: '{c} <async_code>',
+			executor: async (args) => ({
+				send: false,
+				result: await this.evaluate(args, true)
 			})
 		});
 	}
 	
 	pluginWillUnload() {
 		powercord.api.commands.unregisterCommand('eval');
+		powercord.api.commands.unregisterCommand('eval_async');
 	}
 	
-	async evaluate(args) {
+	async evaluate(args, is_async) {
 		var result = undefined;
 		var errored = false;
+		
+		var statement = args.join(" ");
+		if (is_async) {
+			if (statement.includes(";") && (!statement.endsWith(";") || statement.includes("\n") || (statement.split(';').length) > 2)) {
+				statement = "(async () => {" + statement + "})()";
+			} else {
+				statement = "(async () => { return " + statement + "})()";
+			}
+		}
+		
 		var start = process.hrtime();
 		try {
-			result = eval(args.join(" "));
+			result = eval(statement);
 			if (result instanceof Promise) {
 				result = await result;
 			}
@@ -36,7 +57,7 @@ module.exports = class simple_eval extends Plugin {
 		var elapsed_str = elapsed_ms + ' ms'; // 3 decimal places
 		
 		if (errored) {
-			console.log(result);
+			console.error(result);
 		}
 		
 		result = util.inspect(result);
